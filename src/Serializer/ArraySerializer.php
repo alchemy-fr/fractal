@@ -44,6 +44,18 @@ class ArraySerializer extends SerializerAbstract
     }
 
     /**
+     * Serialize null resource.
+     *
+     * @param string $resourceKey
+     *
+     * @return array|null
+     */
+    public function null($resourceKey)
+    {
+        return [];
+    }
+
+    /**
      * Serialize the included data.
      *
      * @param ResourceInterface $resource

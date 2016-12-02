@@ -201,7 +201,9 @@ class Scope
     /**
      * Convert the current data for this scope to an array.
      *
-     * @return array
+     * In case Serializer used could return null, this could also return null
+     *
+     * @return array|null
      */
     public function toArray()
     {
@@ -247,7 +249,7 @@ class Scope
         // Pull out all of OUR metadata and any custom meta data to merge with the main level data
         $meta = $serializer->meta($this->resource->getMeta());
 
-        return array_merge($data, $meta);
+        return null === $data ? null : array_merge($data, $meta);
     }
 
     /**
@@ -306,16 +308,18 @@ class Scope
     protected function serializeResource(SerializerAbstract $serializer, $data)
     {
         $resourceKey = $this->resource->getResourceKey();
+   
+     if (null !== $data) {
+            if ($this->resource instanceof Collection) {
+                return $serializer->collection($resourceKey, $data);
+            }
 
-        if ($this->resource instanceof Collection) {
-            return $serializer->collection($resourceKey, $data);
+            if ($this->resource instanceof Item) {
+                return $serializer->item($resourceKey, $data);
+            }
         }
 
-        if ($this->resource instanceof Item) {
-            return $serializer->item($resourceKey, $data);
-        }
-
-        return $serializer->null();
+        return $serializer->null($resourceKey);
     }
 
     /**
